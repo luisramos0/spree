@@ -24,7 +24,8 @@ module Spree
     has_many :product_properties, :dependent => :destroy
     has_many :properties, :through => :product_properties
 
-    has_and_belongs_to_many :taxons, :join_table => 'spree_products_taxons'
+    has_many :classifications, :dependent => :delete_all
+    has_many :taxons, :through => :classifications
 
     belongs_to :tax_category
     belongs_to :shipping_category
@@ -119,7 +120,7 @@ module Spree
     # adjusts the "on_hand" inventory level for the product up or down to match the given new_level
     def on_hand=(new_level)
       unless self.on_demand
-        raise 'cannot set on_hand of product with variants' if has_variants? && Spree::Config[:track_inventory_levels] 
+        raise 'cannot set on_hand of product with variants' if has_variants? && Spree::Config[:track_inventory_levels]
         master.on_hand = new_level
       end
     end
