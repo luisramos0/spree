@@ -14,7 +14,7 @@ module Spree
     let!(:attributes) { [:id, :name, :count_on_hand,
                          :sku, :price, :weight, :height,
                          :width, :depth, :is_master, :cost_price,
-                         :permalink] }
+                         :permalink, :product_id, :lock_version] }
 
     before do
       stub_authentication!
@@ -51,7 +51,7 @@ module Spree
                                                  :option_type_name,
                                                  :option_type_id])
     end
-    
+
     it "variants returned contain images data" do
       variant.images.create!(:attachment => image("thinking-cat.jpg"))
 
@@ -78,11 +78,9 @@ module Spree
     end
 
     context "pagination" do
-      default_per_page(1)
-
       it "can select the next page of variants" do
         second_variant = create(:variant)
-        api_get :index, :page => 2
+        api_get :index, :page => 2, :per_page => 1
         json_response["variants"].first.should have_attributes(attributes)
         json_response["total_count"].should == 3
         json_response["current_page"].should == 2
@@ -99,13 +97,13 @@ module Spree
                                                  :option_type_name,
                                                  :option_type_id])
     end
-    
+
     it "can see a single variant with images" do
       variant.images.create!(:attachment => image("thinking-cat.jpg"))
-      
+
       api_get :show, :id => variant.to_param
-      
-      json_response.should have_attributes(attributes + [:images])      
+
+      json_response.should have_attributes(attributes + [:images])
       option_values = json_response["option_values"]
       option_values.first.should have_attributes([:name,
                                                  :presentation,
@@ -170,6 +168,18 @@ module Spree
         response.status.should == 204
         lambda { variant.reload }.should raise_error(ActiveRecord::RecordNotFound)
       end
+
+      context "without product" do
+        sign_in_as_admin!
+        let(:resource_scoping) { { :product_id => variant.product.to_param } }
+
+        it "will not raise an ActiveRecord::ReadOnlyRecord exception" do
+          api_put :update, :id => variant.to_param, :variant => { :sku => "12345", :on_hand => 5 }
+          response.status.should_not eql 422
+          json_response["exception"].should_not eql "ActiveRecord::ReadOnlyRecord"
+        end
+      end
+
     end
 
 

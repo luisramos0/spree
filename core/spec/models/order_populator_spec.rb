@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Spree::OrderPopulator do
-  let(:order) { double('Order') }
+  let(:order) { double('Order', :restart_checkout_flow => nil) }
   subject { Spree::OrderPopulator.new(order, "USD") }
 
   context "with stubbed out find_variant" do
@@ -24,7 +24,7 @@ describe Spree::OrderPopulator do
         variant.stub :available? => false
 
         order.should_not_receive(:add_variant)
-        subject.populate(:products => { 1 => 2 }, :quantity => 1) 
+        subject.populate(:products => { 1 => 2 }, :quantity => 1)
         subject.should_not be_valid
         subject.errors.full_messages.join("").should == %Q{"T-Shirt (Size: M)" is out of stock.}
       end
@@ -78,6 +78,14 @@ describe Spree::OrderPopulator do
         order.should_receive(:add_variant).with(variant, 5, subject.currency)
         subject.populate(:variants => { 2 => 5 })
       end
+    end
+
+    it "restarts the checkout flow on the order" do
+      variant.stub :available? => true
+      variant.stub :on_hand => 10
+      order.should_receive(:add_variant).with(variant, 5, subject.currency)
+      order.should_receive(:restart_checkout_flow)
+      subject.populate(:variants => { 2 => 5 })
     end
   end
 end

@@ -6,16 +6,12 @@ describe Spree::Payment do
                              :ship_address => Spree::Address.new)
   end
 
-  let(:gateway) do
-    gateway = Spree::Gateway::Bogus.new({:environment => 'test', :active => true}, :without_protection => true)
-    gateway.stub :source_required => true
-    gateway
-  end
-
   let(:card) do
     mock_model(Spree::CreditCard, :number => "4111111111111111",
                                   :has_payment_profile? => true)
   end
+
+  let(:gateway) { create(:bogus_payment_method) }
 
   let(:payment) do
     payment = Spree::Payment.new
@@ -517,7 +513,11 @@ describe Spree::Payment do
 
   context "#save" do
     it "should call order#update!" do
-      payment = Spree::Payment.create({:amount => 100, :order => order}, :without_protection => true)
+      payment = Spree::Payment.create(
+        {:amount => 100, :order => order, payment_method: gateway},
+        :without_protection => true
+      )
+
       order.should_receive(:update!)
       payment.save
     end
@@ -615,9 +615,18 @@ describe Spree::Payment do
 
   # Regression test for #1998
   context "#set_unique_identifier" do
+
     it "sets a unique identifier on create" do
-      payment.run_callbacks(:save)
+      payment.run_callbacks(:create)
       payment.identifier.should_not be_blank
+    end
+
+    # Regression test for #3733
+    it "does not regenerate the identifier on re-save" do
+      payment.save
+      old_identifier = payment.identifier
+      payment.save
+      payment.identifier.should == old_identifier
     end
   end
 end

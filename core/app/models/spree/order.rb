@@ -17,7 +17,8 @@ module Spree
       go_to_state :delivery
       go_to_state :payment, :if => lambda { |order|
         # Fix for #2191
-        if order.shipping_method
+        # See #3708 also
+        if order.total.to_f <= 0 && order.shipping_method
           order.create_shipment!
           order.update_totals
         end
@@ -164,7 +165,7 @@ module Spree
 
     # If true, causes the confirmation step to happen during the checkout process
     def confirmation_required?
-      payments.map(&:payment_method).any?(&:payment_profiles_supported?)
+      payments.valid.map(&:payment_method).any?(&:payment_profiles_supported?)
     end
 
     # Used by the checkout state machine to check for unprocessed payments
@@ -260,7 +261,7 @@ module Spree
     def awaiting_returns?
       return_authorizations.any? { |return_authorization| return_authorization.authorized? }
     end
-    
+
     def add_variant(variant, quantity = 1, currency = nil)
       current_item = find_line_item_by_variant(variant)
       if current_item
@@ -496,8 +497,8 @@ module Spree
     end
 
     def empty!
-      line_items.destroy_all
       adjustments.destroy_all
+      line_items.destroy_all
     end
 
     # destroy any previous adjustments.
@@ -515,13 +516,20 @@ module Spree
       state = "#{name}_state"
       if persisted?
         old_state = self.send("#{state}_was")
-        self.state_changes.create({
-          :previous_state => old_state,
-          :next_state     => self.send(state),
-          :name           => name,
-          :user_id        => self.user_id
-        }, :without_protection => true)
+        new_state = self.send(state)
+        if old_state != new_state
+          self.state_changes.create({
+            :previous_state => old_state,
+            :next_state     => self.send(state),
+            :name           => name,
+            :user_id        => self.user_id
+          }, :without_protection => true)
+        end
       end
+    end
+
+    def restart_checkout_flow
+      self.update_column(:state, checkout_steps.first) unless cart?
     end
 
     private

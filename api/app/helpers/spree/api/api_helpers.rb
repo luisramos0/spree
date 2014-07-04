@@ -21,7 +21,7 @@ module Spree
       end
 
       def variant_attributes
-        [:id, :name, :count_on_hand, :sku, :price, :weight, :height, :width, :depth, :is_master, :cost_price, :permalink]
+        [:id, :name, :count_on_hand, :sku, :price, :weight, :height, :width, :depth, :is_master, :cost_price, :permalink, :product_id, :lock_version]
       end
 
       def image_attributes
@@ -33,7 +33,7 @@ module Spree
       end
 
       def order_attributes
-        [:id, :number, :item_total, :total, :state, :adjustment_total, :user_id, :created_at, :updated_at, :completed_at, :payment_total, :shipment_state, :payment_state, :email, :special_instructions]
+        [:id, :number, :item_total, :total, :state, :adjustment_total, :user_id, :created_at, :updated_at, :completed_at, :payment_total, :shipment_state, :payment_state, :email, :special_instructions, :channel]
       end
 
       def line_item_attributes

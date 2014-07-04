@@ -1,27 +1,40 @@
 Spree::Order.class_eval do
+  attr_accessible :channel, :as => :api_admin
+
   def self.build_from_api(user, params)
-    completed_at = params.delete(:completed_at)
-    line_items = params.delete(:line_items_attributes) || {}
-    shipments = params.delete(:shipments_attributes) || []
-    payments = params.delete(:payments_attributes) || []
-    adjustments = params.delete(:adjustments_attributes) || []
+    begin
+      ensure_country_id_from_api params[:ship_address_attributes]
+      ensure_state_id_from_api params[:ship_address_attributes]
+      ensure_country_id_from_api params[:bill_address_attributes]
+      ensure_state_id_from_api params[:bill_address_attributes]
 
-    ensure_country_id_from_api params[:ship_address_attributes]
-    ensure_state_id_from_api params[:ship_address_attributes]
+      order = create!
 
-    ensure_country_id_from_api params[:bill_address_attributes]
-    ensure_state_id_from_api params[:bill_address_attributes]
+      order.create_shipments_from_api params.delete(:shipments_attributes) || []
+      order.create_line_items_from_api params.delete(:line_items_attributes) || {}
+      order.create_adjustments_from_api params.delete(:adjustments_attributes) || []
+      order.create_payments_from_api params.delete(:payments_attributes) || []
+      order.complete_from_api params.delete(:completed_at)
 
-    order = create!(params)
+      destroy_automatic_taxes_on_import(order, params)
 
-    order.create_shipments_from_api(shipments)
-    order.create_line_items_from_api(line_items)
-    order.create_adjustments_from_api(adjustments)
-    order.create_payments_from_api(payments)
-    order.complete_from_api(completed_at)
+      if user.has_spree_role? "admin"
+        order.update_attributes!(params, without_protection: true)
+      else
+        order.update_attributes!(params)
+      end
 
-    order.save!
-    order
+      order.reload
+    rescue Exception => e
+      order.destroy if order && order.persisted?
+      raise e.message
+    end
+  end
+
+  def self.destroy_automatic_taxes_on_import(order, params)
+    if params.delete :import
+      order.adjustments.tax.destroy_all
+    end
   end
 
   def complete_from_api(completed_at)
@@ -53,7 +66,7 @@ Spree::Order.class_eval do
         shipment.adjustment.amount = s[:cost].to_f
         shipment.adjustment.save
       rescue Exception => e
-        raise "#{e.message} #{s}"
+        raise "Order import shipments: #{e.message} #{s}"
       end
     end
   end
@@ -67,7 +80,7 @@ Spree::Order.class_eval do
         payment.payment_method = Spree::PaymentMethod.find_by_name!(p[:payment_method])
         payment.save!
       rescue Exception => e
-        raise "#{e.message} #{p}"
+        raise "Order import payments: #{e.message} #{p}"
       end
     end
   end
@@ -77,9 +90,15 @@ Spree::Order.class_eval do
       begin
         line_item = line_items_hash[k]
         self.class.ensure_variant_id_from_api(line_item)
-        self.add_variant(Spree::Variant.find(line_item[:variant_id]), line_item[:quantity])
+
+        item = self.add_variant(Spree::Variant.find(line_item[:variant_id]), line_item[:quantity].to_i)
+
+        if line_item.key? :price
+          item.price = line_item[:price]
+          item.save!
+        end
       rescue Exception => e
-        raise "#{e.message} #{line_item}"
+        raise "Order import line items: #{e.message} #{line_item}"
       end
     end
   end
@@ -92,7 +111,7 @@ Spree::Order.class_eval do
         adjustment.locked = true
         adjustment.save!
       rescue Exception => e
-        raise "#{e.message} #{a}"
+        raise "Order import adjustments: #{e.message} #{a}"
       end
     end
   end
@@ -100,11 +119,11 @@ Spree::Order.class_eval do
   def self.ensure_variant_id_from_api(hash)
     begin
       unless hash[:variant_id].present?
-        hash[:variant_id] = Spree::Variant.find_by_sku!(hash[:sku]).id
+        hash[:variant_id] = Spree::Variant.active.find_by_sku!(hash[:sku]).id
         hash.delete(:sku)
       end
     rescue Exception => e
-      raise "#{e.message} #{hash}"
+      raise "Ensure order import variant: #{e.message} #{hash}"
     end
   end
 
@@ -127,7 +146,7 @@ Spree::Order.class_eval do
       address[:country_id] = Spree::Country.where(search).first!.id
 
     rescue Exception => e
-      raise "#{e.message} #{search}"
+      raise "Ensure order import address country: #{e.message} #{search}"
     end
   end
 
@@ -143,9 +162,15 @@ Spree::Order.class_eval do
       end
 
       address.delete(:state)
-      address[:state_id] = Spree::State.where(search).first!.id
+      search[:country_id] = address[:country_id]
+
+      if state = Spree::State.where(search).first
+        address[:state_id] = state.id
+      else
+        address[:state_name] = search[:name] || search[:abbr]
+      end
     rescue Exception => e
-      raise "#{e.message} #{search}"
+      raise "Ensure order import address state: #{e.message} #{search}"
     end
   end
 end

@@ -155,9 +155,19 @@ describe Spree::Order do
       order.finalize!
     end
 
-    it "should log state event" do
-      order.state_changes.should_receive(:create).exactly(3).times #order, shipment & payment state changes
+    it "should log state events" do
       order.finalize!
+      payment_state_changes = order.state_changes.where(:name => "payment")
+      payment_state_changes.count.should == 1
+      payment_state_change = payment_state_changes.first
+      payment_state_change.previous_state.should be_nil
+      payment_state_change.next_state.should == "balance_due"
+
+      order_state_changes = order.state_changes.where(:name => "order")
+      order_state_changes.count.should == 1
+      order_state_change = order_state_changes.first
+      order_state_change.previous_state.should == "cart"
+      order_state_change.next_state.should == "complete"
     end
   end
 
@@ -514,6 +524,20 @@ describe Spree::Order do
       order = create(:order)
       order.should_receive(:add_awesome_sauce)
       order.finalize!
+    end
+  end
+
+  context "#restart_checkout_flow" do
+    it "updates the state column to the first checkout step" do
+      order = create(:order, :state => "confirm")
+      expect do 
+        order.restart_checkout_flow
+      end.to(change { order.state }.from("confirm").to(order.checkout_steps.first))
+    end
+
+    it "does not update the state if the state is cart" do
+      order = create(:order, :state => "cart")
+      expect { order.restart_checkout_flow }.to_not(change { order.state })
     end
   end
 end

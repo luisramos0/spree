@@ -50,6 +50,7 @@ describe Spree::OrdersController do
       order.stub(:line_items).and_return([])
       order.stub(:line_items=).with([])
       order.stub(:last_ip_address=)
+      order.stub(:restart_checkout_flow)
       Spree::Order.stub(:find_by_id_and_currency).and_return(order)
     end
 
@@ -69,6 +70,11 @@ describe Spree::OrdersController do
       order.stub(:update_attributes).and_return true
       spree_put :update, {}, {:order_id => 1}
       response.should redirect_to(spree.cart_path)
+    end
+
+    it "resets the checkout flow" do
+      order.should_receive(:restart_checkout_flow)
+      spree_put :update, {}, {:order_id => 1}
     end
   end
 
