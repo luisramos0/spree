@@ -1,5 +1,5 @@
 module Spree
-  class ShipmentMailer < ActionMailer::Base
+  class ShipmentMailer < BaseMailer
     helper 'spree/base'
 
     def shipped_email(shipment, resend = false)
