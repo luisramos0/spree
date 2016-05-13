@@ -1,5 +1,5 @@
 module Spree
-  class OrderMailer < ActionMailer::Base
+  class OrderMailer < BaseMailer
     helper 'spree/base'
 
     def confirm_email(order, resend = false)
