@@ -1,6 +1,5 @@
 module Spree
-  class ShipmentMailer < ActionMailer::Base
-
+  class ShipmentMailer < BaseMailer
     def money(amount)
       Spree::Money.new(amount).to_s
     end
