@@ -39,6 +39,7 @@ require 'spree/core/version'
 require 'spree/core/engine'
 
 require 'spree/money'
+require 'spree/i18n'
 
 require 'spree/core/delegate_belongs_to'
 require 'spree/core/ext/active_record'
