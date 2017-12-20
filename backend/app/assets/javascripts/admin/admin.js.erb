@@ -184,7 +184,6 @@ $(document).ready(function(){
         dataType: 'script',
         success: function(response) {
           el.parents("tr").fadeOut('hide', function() {
-            delete_resource_hidden_id_input($(this));
             $(this).remove();
           });
         },
@@ -195,20 +194,6 @@ $(document).ready(function(){
     }
     return false;
   });
-
-  /**
-   * TODO: Remove when we get to Spree 2.0
-   *
-   * Removes the hidden input associated to the specified <tr>, which contains
-   * the id of the line item.
-   *
-   * Since the line item has been removed through ajax we must remove its hidden
-   * id field as well. Otherwise the controller tries to find it and obviously
-   * fails.
-   **/
-  delete_resource_hidden_id_input = function(tr) {
-    tr.next().remove();
-  };
 
   $('body').on('click', 'a.remove_fields', function() {
     el = $(this);
