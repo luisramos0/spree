@@ -36,6 +36,36 @@ module Spree
           package.backordered.size.should eq 5
         end
 
+        context 'when a packer factory is not specified' do
+          let(:package) { double(:package, add: true) }
+
+          it 'calls Spree::Stock::Package' do
+            Package
+              .should_receive(:new)
+              .with(stock_location, order)
+              .and_return(package)
+
+            subject.default_package
+          end
+        end
+
+        context 'when a packer factory is specified' do
+          subject { Packer.new(stock_location, order, package_factory: package_factory) }
+
+          class TestPackageFactory < Package; end
+
+          let(:package) { double(:package, add: true) }
+
+          it 'calls the specified factory' do
+            TestPackageFactory
+              .should_receive(:new)
+              .with(stock_location, order)
+              .and_return(package)
+
+            subject.default_package
+          end
+        end
+
         context "location doesn't have order items in stock" do
           let(:stock_location) { create(:stock_location, propagate_all_variants: false) }
           let(:packer) { Packer.new(stock_location, order) }
