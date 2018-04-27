@@ -3,10 +3,11 @@ module Spree
     class Packer
       attr_reader :stock_location, :order, :splitters
 
-      def initialize(stock_location, order, splitters=[Splitter::Base])
+      def initialize(stock_location, order, splitters=[Splitter::Base], package_factory:)
         @stock_location = stock_location
         @order = order
         @splitters = splitters
+        @package_factory = package_factory || Package
       end
 
       def packages
@@ -14,7 +15,7 @@ module Spree
       end
 
       def default_package
-        package = Package.new(stock_location, order)
+        package = package_factory.new(stock_location, order)
         order.line_items.each do |line_item|
           next unless stock_location.stock_item(line_item.variant)
 
@@ -26,6 +27,9 @@ module Spree
       end
 
       private
+
+      attr_reader :package_factory
+
       def build_splitter
         splitter = nil
         splitters.reverse.each do |klass|
