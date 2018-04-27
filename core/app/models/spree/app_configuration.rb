@@ -106,5 +106,13 @@ module Spree
     def searcher_class=(sclass)
       @searcher_class = sclass
     end
+
+    def package_factory=(factory)
+      @package_factory = factory
+    end
+
+    def package_factory
+      @package_factory ||= Spree::Stock::Package
+    end
   end
 end

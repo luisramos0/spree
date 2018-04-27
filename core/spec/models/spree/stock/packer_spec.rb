@@ -8,6 +8,10 @@ module Spree
 
       subject { Packer.new(stock_location, order) }
 
+      before do
+        Spree::Config.stub(:package_factory) { Package }
+      end
+
       context 'packages' do
         it 'builds an array of packages' do
           packages = subject.packages
@@ -50,9 +54,11 @@ module Spree
         end
 
         context 'when a packer factory is specified' do
-          subject { Packer.new(stock_location, order, package_factory: package_factory) }
+          before do
+            Spree::Config.stub(:package_factory) { TestPackageFactory }
+          end
 
-          class TestPackageFactory < Package; end
+          class TestPackageFactory; end
 
           let(:package) { double(:package, add: true) }
 
