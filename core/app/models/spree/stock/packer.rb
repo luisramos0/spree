@@ -3,11 +3,11 @@ module Spree
     class Packer
       attr_reader :stock_location, :order, :splitters
 
-      def initialize(stock_location, order, splitters=[Splitter::Base], package_factory:)
+      def initialize(stock_location, order, splitters=[Splitter::Base])
         @stock_location = stock_location
         @order = order
         @splitters = splitters
-        @package_factory = package_factory || Package
+        @package_factory = Spree::Config.package_factory
       end
 
       def packages
