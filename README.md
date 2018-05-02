@@ -25,6 +25,20 @@ interested in. So for example, you could use just the barebones spree\_core gem
 and perhaps combine it with your own custom promotion scheme instead of using
 spree_promo.
 
+## Open Food Network
+
+This fork is maintained and used by [Open Food
+Network](https://github.com/openfoodfoundation/openfoodnetwork) (OFN). The branch
+you're looking at is the one used as the upcoming Spree version OFN will run
+onto. You can read the full details of this upgrade in [its wiki
+page](https://github.com/openfoodfoundation/openfoodnetwork/wiki/Spree-2.0-upgrade) as well as the [reasoning behind this fork](https://github.com/openfoodfoundation/openfoodnetwork/wiki/Spree-2.0-upgrade#ofns-spree-fork).
+
+Branched off of v2.0.4 it contains the following extra commits:
+
+* [3fd1535](https://github.com/spree/spree/commit/3fd1535e75d383fa7119d2f3b985f8c12731302c):
+    Introduced in [#2252](https://github.com/openfoodfoundation/openfoodnetwork/pull/2252) to fix an
+    error that prevented the app from booting.
+
 [![Code Climate](https://codeclimate.com/github/spree/spree.png)](https://codeclimate.com/github/spree/spree)
 
 Installation
