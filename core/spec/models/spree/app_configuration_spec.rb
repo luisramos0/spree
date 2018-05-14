@@ -19,5 +19,18 @@ describe Spree::AppConfiguration do
     prefs.searcher_class.should eq Spree::Core::Search::Base
   end
 
+  it 'uses Spree::Stock::Package by default' do
+    prefs.package_factory = nil
+    prefs.package_factory.should eq Spree::Stock::Package
+  end
+
+  context 'when a package factory is specified' do
+    class TestPackageFactory; end
+
+    it 'uses the set package factory' do
+      prefs.package_factory = TestPackageFactory
+      prefs.package_factory.should eq TestPackageFactory
+    end
+  end
 end
 

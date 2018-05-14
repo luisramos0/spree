@@ -8,6 +8,10 @@ module Spree
 
       subject { Packer.new(stock_location, order) }
 
+      before do
+        Spree::Config.stub(:package_factory) { Package }
+      end
+
       context 'packages' do
         it 'builds an array of packages' do
           packages = subject.packages
@@ -29,6 +33,38 @@ module Spree
           package = subject.default_package
           package.on_hand.size.should eq 5
           package.backordered.size.should eq 5
+        end
+
+        context 'when a packer factory is not specified' do
+          let(:package) { double(:package, add: true) }
+
+          it 'calls Spree::Stock::Package' do
+            Package
+              .should_receive(:new)
+              .with(stock_location, order)
+              .and_return(package)
+
+            subject.default_package
+          end
+        end
+
+        context 'when a packer factory is specified' do
+          before do
+            Spree::Config.stub(:package_factory) { TestPackageFactory }
+          end
+
+          class TestPackageFactory; end
+
+          let(:package) { double(:package, add: true) }
+
+          it 'calls the specified factory' do
+            TestPackageFactory
+              .should_receive(:new)
+              .with(stock_location, order)
+              .and_return(package)
+
+            subject.default_package
+          end
         end
 
         context "location doesn't have order items in stock" do
