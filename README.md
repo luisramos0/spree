@@ -31,9 +31,12 @@ This fork is maintained and used by [Open Food
 Network](https://github.com/openfoodfoundation/openfoodnetwork) (OFN). The branch
 you're looking at is the one used as the upcoming Spree version OFN will run
 onto. You can read the full details of this upgrade in [its wiki
-page](https://github.com/openfoodfoundation/openfoodnetwork/wiki/Spree-2.0-upgrade) as well as the [reasoning behind this fork](https://github.com/openfoodfoundation/openfoodnetwork/wiki/Spree-2.0-upgrade#ofns-spree-fork).
+page](https://github.com/openfoodfoundation/openfoodnetwork/wiki/Spree-2.0-upgrade) as well as the [reasoning behind this fork](https://github.com/openfoodfoundation/openfoodnetwork/wiki/OFN's-Spree-fork%F0%9F%8D%B4).
 
-Branched off of v2.0.4 it contains the following extra commits:
+As discussed in the [first Spree upgrade
+catch-up](https://github.com/openfoodfoundation/openfoodnetwork/wiki/Team-catch-ups--%F0%9F%92%AC#slides), this gem only aims to provide extension hooks required by OFN. Unfortunately we might need to backport some fixes to do that.
+
+Branched off of Spree's v2.0.4, it contains the following extra commits:
 
 * [3fd1535](https://github.com/spree/spree/commit/3fd1535e75d383fa7119d2f3b985f8c12731302c):
     Introduced in [#2252](https://github.com/openfoodfoundation/openfoodnetwork/pull/2252) to fix an
