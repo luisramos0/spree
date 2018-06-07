@@ -201,7 +201,9 @@ module Spree
     end
 
     def updater
-      @updater ||= OrderUpdater.new(self)
+      @updater ||= Spree::Config.order_updater_decorator.new(
+        Spree::OrderUpdater.new(self)
+      )
     end
 
     def update!

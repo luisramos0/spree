@@ -32,5 +32,18 @@ describe Spree::AppConfiguration do
       prefs.package_factory.should eq TestPackageFactory
     end
   end
-end
 
+  it 'uses Spree::NullDecorator by default' do
+    prefs.order_updater_decorator = nil
+    prefs.order_updater_decorator.should eq Spree::NullDecorator
+  end
+
+  context 'when an order_updater_decorator is specified' do
+    class FakeOrderUpdaterDecorator; end
+
+    it 'uses the set order_updater_decorator' do
+      prefs.order_updater_decorator = FakeOrderUpdaterDecorator
+      prefs.order_updater_decorator.should eq FakeOrderUpdaterDecorator
+    end
+  end
+end

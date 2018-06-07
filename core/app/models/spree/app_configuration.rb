@@ -107,12 +107,14 @@ module Spree
       @searcher_class = sclass
     end
 
-    def package_factory=(factory)
-      @package_factory = factory
-    end
+    attr_writer :package_factory, :order_updater_decorator
 
     def package_factory
       @package_factory ||= Spree::Stock::Package
+    end
+
+    def order_updater_decorator
+      @order_updater_decorator ||= NullDecorator
     end
   end
 end
