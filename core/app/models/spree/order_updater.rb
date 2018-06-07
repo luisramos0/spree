@@ -125,6 +125,10 @@ module Spree
       choose_best_promotion_adjustment
     end
 
+    def before_save_hook
+      # no op
+    end
+
     private
 
       # Picks one (and only one) promotion to be eligible for this order

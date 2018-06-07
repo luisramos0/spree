@@ -206,6 +206,11 @@ describe Spree::Order do
       order.state_changes.should_receive(:create).exactly(3).times #order, shipment & payment state changes
       order.finalize!
     end
+
+    it 'calls updater#before_save' do
+      order.updater.should_receive(:before_save_hook)
+      order.finalize!
+    end
   end
 
   context "#process_payments!" do
