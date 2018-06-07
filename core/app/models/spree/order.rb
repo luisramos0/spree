@@ -334,6 +334,7 @@ module Spree
       end
 
       updater.update_shipment_state
+      updater.before_save_hook
       save
       updater.run_hooks
 
