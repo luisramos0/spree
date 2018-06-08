@@ -58,7 +58,7 @@ module Spree
       if !Spree::Config[:track_inventory_levels]
         raise 'Cannot set on_hand value when Spree::Config[:track_inventory_levels] is false'
       else
-        self.count_on_hand = new_level unless self.on_demand
+        self.count_on_hand = new_level
       end
     end
 
