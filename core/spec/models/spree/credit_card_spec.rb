@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Spree::CreditCard do
 
-  let(:valid_credit_card_attributes) { { number: '4111111111111111', verification_value: '123', month: 12, year: 2014 } }
+  let(:valid_credit_card_attributes) { { number: '4111111111111111', verification_value: '123', month: 12, year: Time.now.year + 1 } }
 
   def self.payment_states
     Spree::Payment.state_machine.states.keys

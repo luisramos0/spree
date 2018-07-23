@@ -41,6 +41,9 @@ Branched off of Spree's v2.0.4, it contains the following extra commits:
 * [3fd1535](https://github.com/spree/spree/commit/3fd1535e75d383fa7119d2f3b985f8c12731302c):
     Introduced in [#2252](https://github.com/openfoodfoundation/openfoodnetwork/pull/2252) to fix an
     error that prevented the app from booting.
+* [002b725d1..e27805789](https://github.com/spree/spree/commit/7b6045085f9aebcd2f0d7ba73fc8867b80e07ca3#diff-1e88c46e0e0d3d6469c50c9be98ba2a1)
+    Introduced in [#7](https://github.com/openfoodfoundation/spree/pull/7) to
+    have a valid credit card factory and thus have tests passing.
 
 [![Code Climate](https://codeclimate.com/github/spree/spree.png)](https://codeclimate.com/github/spree/spree)
 
