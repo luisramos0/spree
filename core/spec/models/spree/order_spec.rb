@@ -206,6 +206,11 @@ describe Spree::Order do
       order.state_changes.should_receive(:create).exactly(3).times #order, shipment & payment state changes
       order.finalize!
     end
+
+    it 'calls updater#before_save' do
+      order.updater.should_receive(:before_save_hook)
+      order.finalize!
+    end
   end
 
   context "#process_payments!" do
@@ -572,5 +577,26 @@ describe Spree::Order do
       order.finalize!
     end
   end
-end
 
+  context '#updater' do
+    class FakeOrderUpdaterDecorator
+      attr_reader :decorated_object
+
+      def initialize(decorated_object)
+        @decorated_object = decorated_object
+      end
+    end
+
+    before do
+      Spree::Config.stub(:order_updater_decorator) { FakeOrderUpdaterDecorator }
+    end
+
+    it 'returns an order_updater_decorator class' do
+      order.updater.class.should == FakeOrderUpdaterDecorator
+    end
+
+    it 'decorates a Spree::OrderUpdater' do
+      order.updater.decorated_object.class.should == Spree::OrderUpdater
+    end
+  end
+end
