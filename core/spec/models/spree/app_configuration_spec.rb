@@ -41,6 +41,12 @@ describe Spree::AppConfiguration do
   context 'when an order_updater_decorator is specified' do
     class FakeOrderUpdaterDecorator; end
 
+    around do |example|
+      default_decorator = prefs.order_updater_decorator
+      example.run
+      prefs.order_updater_decorator = default_decorator
+    end
+
     it 'uses the set order_updater_decorator' do
       prefs.order_updater_decorator = FakeOrderUpdaterDecorator
       prefs.order_updater_decorator.should eq FakeOrderUpdaterDecorator

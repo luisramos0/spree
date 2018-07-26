@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe NullDecorator do
+describe Spree::NullDecorator do
   class FakeDecorated; end
 
   let(:decorated) { FakeDecorated.new }
