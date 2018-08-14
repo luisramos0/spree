@@ -43,7 +43,7 @@ describe "Shipments" do
       expect(page.find("#shipment_#{order.shipments.first.id}")).to be_present
 
       within_row(2) { click_icon 'resize-horizontal' }
-      targetted_select2 "LA(#{order.reload.shipments.last.number})", from: '#s2id_item_stock_location'
+      targetted_select2 "NY Warehouse(100)", from: '#s2id_item_stock_location'
       click_icon :ok
       wait_for_ajax
       expect(page.find("#shipment_#{order.reload.shipments.last.id}")).to be_present
