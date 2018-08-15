@@ -73,7 +73,7 @@ describe "Stock Management" do
         click_link "Stock Management"
 
         fill_in "stock_movement_quantity", with: 5
-        select2 "default", from: "Stock Location"
+        select2 "Default", from: "Stock Location"
         click_button "Add Stock"
 
         page.should have_content('successfully created')
@@ -87,7 +87,7 @@ describe "Stock Management" do
         click_link "Stock Management"
 
         fill_in "stock_movement_quantity", with: -5
-        select2 "default", from: "Stock Location"
+        select2 "Default", from: "Stock Location"
         click_button "Add Stock"
 
         page.should have_content('successfully created')
@@ -101,7 +101,7 @@ describe "Stock Management" do
         click_link "Stock Management"
 
         fill_in "stock_movement_quantity", with: -5
-        select2 "default", from: "Stock Location"
+        select2 "Default", from: "Stock Location"
         click_button "Add Stock"
 
         page.should have_content('successfully created')
