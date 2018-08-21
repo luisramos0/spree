@@ -117,9 +117,7 @@ module Spree
           end
 
           it 'should respond with 404' do
-            pending '[Spree build] Failing spec'
-            spree_get :show, {:id => 'R123'}
-            response.code.should == '404'
+            expect { spree_get :show, {:id => 'R123'} }.to render_template(:file => "#{Rails.root}/public/404.html")
           end
         end
       end

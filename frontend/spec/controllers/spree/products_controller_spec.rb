@@ -11,9 +11,7 @@ describe Spree::ProductsController do
   end
 
   it "cannot view non-active products" do
-    pending '[Spree build] Failing spec'
-    spree_get :show, :id => product.to_param
-    response.status.should == 404
+    expect { spree_get :show, :id => product.to_param }.to render_template(:file => "#{Rails.root}/public/404.html")
   end
 
   it "should provide the current user to the searcher class" do
