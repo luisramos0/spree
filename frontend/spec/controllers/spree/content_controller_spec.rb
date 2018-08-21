@@ -1,9 +1,9 @@
 require 'spec_helper'
 describe Spree::ContentController do
   it "should not display a local file" do
-    pending '[Spree build] Failing spec'
-    spree_get :show, :path => "../../Gemfile"
-    response.response_code.should == 404
+    expect {
+      spree_get :show, :path => "../../Gemfile"
+    }.to render_template(:file => "#{Rails.root}/public/404.html")
   end
 
   it "should display CVV page" do
