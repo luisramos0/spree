@@ -27,6 +27,12 @@ describe Spree::AppConfiguration do
   context 'when a package factory is specified' do
     class TestPackageFactory; end
 
+    around do |example|
+      default_factory = prefs.package_factory
+      example.run
+      prefs.package_factory = default_factory
+    end
+
     it 'uses the set package factory' do
       prefs.package_factory = TestPackageFactory
       prefs.package_factory.should eq TestPackageFactory
