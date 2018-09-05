@@ -33,17 +33,20 @@ production:
 development:
   adapter: postgresql
   database: <%= database_prefix %>spree_development
-  username: postgres
+  username: <%= ENV.fetch('DATABASE_USERNAME', 'postgres') %>
+  password: <%= ENV.fetch('DATABASE_PASSWORD', '') %>
   min_messages: warning
 test:
   adapter: postgresql
   database: <%= database_prefix %>spree_test
-  username: postgres
+  username: <%= ENV.fetch('DATABASE_USERNAME', 'postgres') %>
+  password: <%= ENV.fetch('DATABASE_PASSWORD', '') %>
   min_messages: warning
 production:
   adapter: postgresql
   database: <%= database_prefix %>spree_production
-  username: postgres
+  username: <%= ENV.fetch('DATABASE_USERNAME', 'postgres') %>
+  password: <%= ENV.fetch('DATABASE_PASSWORD', '') %>
   min_messages: warning
 <% else %>
 development:

@@ -6,7 +6,7 @@ source 'https://rubygems.org'
 gem 'json'
 gem 'multi_json'
 gem 'mysql2'
-gem 'pg'
+gem 'pg', '< 1.0'
 gem 'sqlite3'
 
 # Gems used only for assets and not required
