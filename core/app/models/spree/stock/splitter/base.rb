@@ -15,12 +15,13 @@ module Spree
         end
 
         private
+
         def return_next(packages)
           next_splitter ? next_splitter.split(packages) : packages
         end
 
         def build_package(contents=[])
-          Spree::Stock::Package.new(stock_location, order, contents)
+          @packer.package_factory.new(stock_location, order, contents)
         end
       end
     end
