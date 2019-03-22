@@ -15,6 +15,22 @@ module Spree
           splitter2.split(packages)
         end
 
+        it 'builds package using package factory' do
+          # Basic extension of Base splitter used to test build_package method
+          class ::BasicSplitter < Base
+            def split(packages)
+              build_package
+            end
+          end
+
+          # Custom package used to test setting package factory
+          class ::CustomPackage
+            def initialize(stock_location, order, splitters); end
+          end
+          allow(Spree::Config).to receive(:package_factory) { CustomPackage }
+
+          expect(::BasicSplitter.new(packer).split(nil).class).to eq CustomPackage
+        end
       end
     end
   end

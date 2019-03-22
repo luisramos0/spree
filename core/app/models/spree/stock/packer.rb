@@ -1,7 +1,7 @@
 module Spree
   module Stock
     class Packer
-      attr_reader :stock_location, :order, :splitters
+      attr_reader :stock_location, :order, :splitters, :package_factory
 
       def initialize(stock_location, order, splitters=[Splitter::Base])
         @stock_location = stock_location
@@ -27,8 +27,6 @@ module Spree
       end
 
       private
-
-      attr_reader :package_factory
 
       def build_splitter
         splitter = nil
